@@ -150,6 +150,29 @@
   .zl.hover small { color: #4a3417; }
   .zl.hover .dot { background: #1a1209; box-shadow: none; }
 
+  /* ===================== АНИМАЦИИ ===================== */
+  #animMenu { position: fixed; z-index: 12; top: calc(78px + var(--safe-t)); right: 18px; width: 290px; padding: 6px; display: grid; gap: 2px; opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity .25s, transform .25s; }
+  #animMenu.show { opacity: 1; pointer-events: auto; transform: none; }
+  #animMenu button { display: flex; gap: 12px; align-items: center; text-align: left; padding: 10px 12px; border-radius: 11px; transition: background .2s; }
+  #animMenu button:hover { background: rgba(255,255,255,.07); }
+  #animMenu button.active { background: var(--accent-soft); }
+  #animMenu svg { width: 22px; height: 22px; flex: none; stroke: var(--accent); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  #animMenu b { display: block; font-size: 13.5px; font-weight: 700; }
+  #animMenu small { display: block; font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+  #tour { position: fixed; z-index: 11; left: 50%; bottom: calc(86px + var(--safe-b)); width: min(500px, calc(100vw - 24px)); padding: 12px 18px 14px; transform: translateX(-50%) translateY(12px); opacity: 0; pointer-events: none; transition: opacity .4s, transform .4s; }
+  #tour.show { opacity: 1; pointer-events: auto; transform: translateX(-50%); }
+  #tour .top { display: flex; justify-content: space-between; align-items: center; }
+  #tour .top span { font-size: 11.5px; font-weight: 800; letter-spacing: .08em; color: var(--accent); }
+  #tour .btns { display: flex; gap: 4px; }
+  #tour .btns button { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: #d7dde4; }
+  #tour .btns button:hover { background: rgba(255,255,255,.08); }
+  #tour .btns svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #tour h3 { font-size: 18px; font-weight: 800; margin: 0 0 3px; }
+  #tour p { font-size: 13px; color: #c9d0d8; line-height: 1.5; }
+  #tour .prog { height: 2px; background: rgba(255,255,255,.1); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+  #tour .prog i { display: block; height: 100%; width: 0; background: var(--accent); }
+  body.touring #card { opacity: 0; pointer-events: none; }
+
   /* ===================== ПОДСКАЗКА ===================== */
   #hint { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(5,7,10,.45); opacity: 0; pointer-events: none; transition: opacity .4s; }
   #hint.show { opacity: 1; pointer-events: auto; }
@@ -208,6 +231,9 @@
     body.booting #views, body.intro #views { transform: translateY(8px); }
     .vbtn { padding: 10px 13px; font-size: 13px; }
     #card { left: 10px; right: 10px; top: auto; bottom: calc(76px + var(--safe-b)); width: auto; max-height: 52vh; overflow-y: auto; transform: translateY(24px); padding: 18px; }
+    #animMenu { top: calc(10px + var(--safe-t)); right: 62px; width: min(290px, calc(100vw - 80px)); }
+    #tour { bottom: calc(76px + var(--safe-b)); padding: 14px 16px; }
+    #tour h3 { font-size: 17px; }
     #card.show { transform: none; }
     #card h2 { font-size: 19px; }
     #hint .cols { grid-template-columns: 1fr; }
@@ -256,7 +282,7 @@
     <div class="t" id="brandName">Дом конференций</div>
     <div class="s" id="brandSub">Конгресс-центр</div>
   </div>
-  <div id="status">Качество: <b id="qText">высокое</b><br><b id="fpsText">—</b> FPS</div>
+  <div id="status">Качество: <b id="qText">высокое</b><br><b id="timeText">13:00</b> · <b id="fpsText">—</b> FPS</div>
 </div>
 
 <!-- Панель инструментов -->
@@ -267,6 +293,9 @@
   </button>
   <button class="tbtn" id="btnSection" data-tip="Разрез здания" aria-label="Разрез">
     <svg viewBox="0 0 24 24"><path d="M12 3 21 8l-9 5-9-5 9-5z"/><path d="m3 12.5 9 5 9-5"/><path d="m3 17 9 5 9-5" stroke-dasharray="2 2.4"/></svg>
+  </button>
+  <button class="tbtn" id="btnAnim" data-tip="Анимации" aria-label="Анимации">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.6v6.8l5.4-3.4z" fill="currentColor"/></svg>
   </button>
   <button class="tbtn on" id="btnLabels" data-tip="Подписи зон" aria-label="Подписи">
     <svg viewBox="0 0 24 24"><path d="M3.5 12.2V4.5a1 1 0 0 1 1-1h7.7l8.3 8.3a1 1 0 0 1 0 1.4l-7.3 7.3a1 1 0 0 1-1.4 0z"/><circle cx="8.2" cy="8.2" r="1.6"/></svg>
@@ -296,6 +325,23 @@
   <button class="seg on" data-floor="all">Все</button>
   <button class="seg" data-floor="1">1</button>
   <button class="seg" data-floor="2">2</button>
+</div>
+
+<!-- Меню анимаций -->
+<div id="animMenu" class="glass">
+  <button data-anim="tour"><svg viewBox="0 0 24 24"><path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M10 9v6l5-3z" fill="currentColor"/></svg><span><b>Экскурсия по зданию</b><small>9 сцен с пояснениями · клавиша T</small></span></button>
+  <button data-anim="timelapse"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2"/><path d="M12 10v2.2l1.4 1"/></svg><span><b>Сутки за 40 секунд</b><small>движение солнца, тени, закат · K</small></span></button>
+  <button data-anim="assembly"><svg viewBox="0 0 24 24"><path d="M4 20h16M6 20v-5h12v5M7 15V10h10v5M9 10V5h6v5"/></svg><span><b>Сборка здания</b><small>этажи встают на место · B</small></span></button>
+</div>
+
+<!-- Панель экскурсии -->
+<div id="tour" class="glass">
+  <div class="top"><span id="tourStep">1 / 9</span>
+    <div class="btns"><button id="tourNext" aria-label="Следующая сцена"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button><button id="tourStop" aria-label="Остановить"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor" stroke="none"/></svg></button></div>
+  </div>
+  <h3 id="tourTitle"></h3>
+  <p id="tourText"></p>
+  <div class="prog"><i id="tourBar"></i></div>
 </div>
 
 <!-- Ракурсы камеры -->
@@ -338,7 +384,8 @@
       <div class="col">
         <h4><svg viewBox="0 0 24 24"><path d="M12 3 21 8l-9 5-9-5 9-5z"/><path d="m3 12.5 9 5 9-5"/></svg>Режимы</h4>
         <div><b>Разрез</b> — снять кровлю и этаж</div>
-        <div><b>День / Ночь</b> — смена освещения</div>
+        <div><b>День / Ночь</b> — переход через закат</div>
+        <div><b>Анимации</b> — экскурсия, сутки, сборка</div>
         <div><b>Ракурсы</b> — кнопки внизу</div>
       </div>
       <div class="col only-desktop">
@@ -346,6 +393,7 @@
         <div><kbd>N</kbd> день/ночь · <kbd>C</kbd> разрез</div>
         <div><kbd>L</kbd> подписи · <kbd>F</kbd> экран</div>
         <div><kbd>1</kbd>–<kbd>7</kbd> ракурсы · <kbd>P</kbd> прогулка</div>
+        <div><kbd>T</kbd> экскурсия · <kbd>K</kbd> сутки · <kbd>B</kbd> сборка</div>
         <div>Прогулка: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, <kbd>Esc</kbd></div>
       </div>
     </div>
@@ -446,6 +494,11 @@ const CONFIG = {
   },
 
   sun: { elevation: 34, azimuth: -38, intensity: 3.1 },
+  startTime: 13,          // время суток при запуске, ч
+  animation: {
+    dayLength: 40,        // «сутки за N секунд» в режиме таймлапса
+    tourDwell: 5.5,       // пауза на каждой сцене экскурсии, с
+  },
   exposure: 0.88,
   introDuration: 6.5,     // длительность облёта при запуске, с
   idleAutoRotate: 22,     // через сколько секунд простоя включается автовращение
@@ -980,6 +1033,7 @@ function createMaterials() {
   MAT.people = std({ color: C.people, roughness: 0.8 });
   MAT.plant = std({ color: '#ffffff', vertexColors: true, roughness: 0.9 });
   MAT.foliage = std({ color: '#ffffff', vertexColors: true, roughness: 0.92 });
+  MAT.foliageStill = MAT.foliage.clone(); // для дерева в лобби — без ветра
   MAT.bark = std({ color: '#5b4a3c', roughness: 0.95 });
   MAT.soil = std({ color: '#3b2f26', roughness: 1 });
   MAT.pv = std({ color: '#1a2b4c', roughness: 0.18, metalness: 0.6 });
@@ -1004,6 +1058,7 @@ function createMaterials() {
   MAT.led = emissive('#ffd7a0', 0.0, 5.0, '#d8d4cc');
   MAT.ledCool = emissive('#cfe6ff', 0.0, 3.5, '#cfd6de');
   MAT.chandelier = emissive('#ffe2b8', 1.2, 5.5);
+  MAT.fountainGlow = emissive('#7fd0ff', 0.0, 4.5, '#cfd6de');
   MAT.letters = std({ color: C.letters, roughness: 0.32, metalness: 0.75, emissive: '#ffd9a0', emissiveIntensity: 0 });
   MAT.letters.userData.dayI = 0; MAT.letters.userData.nightI = 4.2; NIGHT_MATS.push(MAT.letters);
   MAT.brass = std({ color: '#c9a46a', metalness: 0.9, roughness: 0.28 });
@@ -1477,12 +1532,11 @@ function createProtos() {
   PROTO.personWalkIn = proto(pWalk, MAT.people, false, true);
   PROTO.personSit = proto(pSit, MAT.people, false, true);
   PROTO.personSitOut = proto(pSit, MAT.people, true, true);
-  PROTO.geoPersonWalk = pWalk;
   PROTO.trunk = proto(trunkGeometry(), MAT.bark, true, true);
   PROTO.crownA = proto(crownGeometry(11, 'round'), MAT.foliage, true, true);
   PROTO.crownB = proto(crownGeometry(29, 'round'), MAT.foliage, true, true);
   PROTO.crownC = proto(crownGeometry(5, 'cone'), MAT.foliage, true, true);
-  PROTO.crownIn = proto(crownGeometry(11, 'round'), MAT.foliage, false, true);
+  PROTO.crownIn = proto(crownGeometry(11, 'round'), MAT.foliageStill, false, true);
   PROTO.trunkNS = proto(PROTO.trunk.geometry, MAT.bark, false, true);
   PROTO.crownANS = proto(PROTO.crownA.geometry, MAT.foliage, false, true);
   PROTO.crownBNS = proto(PROTO.crownB.geometry, MAT.foliage, false, true);
@@ -2066,7 +2120,7 @@ function createHall() {
       cone.geometry.translate(0, -len / 2, 0);
       cone.position.copy(from); cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), dir);
       cone.renderOrder = 3; g2.add(cone);
-      HALL.spots.push({ from, to });
+      HALL.spots.push({ from, to, base: to.clone(), cone, body, lens, len });
     }
   });
 }
@@ -2433,20 +2487,20 @@ function createFountain(g) {
   const k = kit(); k.cyl(MAT.concrete, 0, 0.3, 0, 0.9, 1.0, 0.6, 40).cyl(MAT.concrete, 0, 0.62, 0, 0.35, 0.45, 0.1, 24);
   k.commit(g, F.x, 0.0, F.z);
   // подводная подсветка
-  const glow = new THREE.Mesh(new THREE.TorusGeometry(F.r - 0.62, 0.035, 8, 120), MAT.ledCool);
+  const glow = new THREE.Mesh(new THREE.TorusGeometry(F.r - 0.62, 0.035, 8, 120), MAT.fountainGlow);
   glow.rotation.x = Math.PI / 2; glow.position.set(F.x, 0.4, F.z); g.add(glow);
 
   // Струи: баллистические частицы, рассчитываемые в вершинном шейдере
   const N_CENTER = 900, N_RING_JETS = 16, N_PER = 70;
   const total = N_CENTER + N_RING_JETS * N_PER;
-  const origin = new Float32Array(total * 3), vel = new Float32Array(total * 3), phase = new Float32Array(total), life = new Float32Array(total), size = new Float32Array(total);
+  const origin = new Float32Array(total * 3), vel = new Float32Array(total * 3), phase = new Float32Array(total), life = new Float32Array(total), size = new Float32Array(total), jet = new Float32Array(total);
   const r = mulberry(9);
   let i = 0;
   for (let k2 = 0; k2 < N_CENTER; k2++, i++) {
     origin.set([F.x + (r() - 0.5) * 0.12, 0.7, F.z + (r() - 0.5) * 0.12], i * 3);
     const vy = 7.2 + r() * 1.1, sp = 0.35 + r() * 0.35, a = r() * Math.PI * 2;
     vel.set([Math.cos(a) * sp, vy, Math.sin(a) * sp], i * 3);
-    life[i] = (2 * vy) / 9.81 * 0.98; phase[i] = r() * 10; size[i] = 0.06 + r() * 0.08;
+    life[i] = (2 * vy * 1.16) / 9.81; phase[i] = r() * 10; size[i] = 0.06 + r() * 0.08; jet[i] = 0;
   }
   for (let j = 0; j < N_RING_JETS; j++) {
     const a = (j / N_RING_JETS) * Math.PI * 2, ox = F.x + Math.cos(a) * (F.r - 1.3), oz = F.z + Math.sin(a) * (F.r - 1.3);
@@ -2454,7 +2508,7 @@ function createFountain(g) {
       origin.set([ox, 0.45, oz], i * 3);
       const vy = 4.6 + r() * 0.4, inward = 1.55 + r() * 0.2;
       vel.set([-Math.cos(a) * inward + (r() - 0.5) * 0.08, vy, -Math.sin(a) * inward + (r() - 0.5) * 0.08], i * 3);
-      life[i] = (2 * vy) / 9.81 * 0.97; phase[i] = r() * 10; size[i] = 0.05 + r() * 0.05;
+      life[i] = (2 * vy * 1.16) / 9.81; phase[i] = r() * 10; size[i] = 0.05 + r() * 0.05; jet[i] = j + 1;
     }
   }
   const geo = new THREE.BufferGeometry();
@@ -2464,28 +2518,40 @@ function createFountain(g) {
   geo.setAttribute('aPhase', new THREE.BufferAttribute(phase, 1));
   geo.setAttribute('aLife', new THREE.BufferAttribute(life, 1));
   geo.setAttribute('aSize', new THREE.BufferAttribute(size, 1));
+  geo.setAttribute('aJet', new THREE.BufferAttribute(jet, 1));
+  // Программа фонтана: высота каждой струи меняется во времени, частица «помнит» момент вылета
   const mat = new THREE.ShaderMaterial({
-    uniforms: { uTime: { value: 0 }, uScale: { value: 600 }, uNight: { value: 0 } },
+    uniforms: { uTime: { value: 0 }, uScale: { value: 600 }, uNight: { value: 0 }, uTint: { value: new THREE.Color(1, 1, 1) } },
     vertexShader: /* glsl */`
       uniform float uTime; uniform float uScale;
-      attribute vec3 aOrigin; attribute vec3 aVel; attribute float aPhase; attribute float aLife; attribute float aSize;
+      attribute vec3 aOrigin; attribute vec3 aVel; attribute float aPhase; attribute float aLife; attribute float aSize; attribute float aJet;
       varying float vA;
+      float jetMul(float jet, float te) {
+        if (jet < 0.5) return 0.8 + 0.2 * sin(te * 0.9) + 0.14 * smoothstep(0.85, 0.95, sin(te * 0.31));
+        float side = mod(jet, 2.0);
+        return 0.5 + 0.5 * (0.5 + 0.5 * sin(te * 1.6 + side * 3.14159 + jet * 0.39));
+      }
       void main() {
-        float t = mod(uTime + aPhase, aLife);
-        vec3 p = aOrigin + aVel * t + vec3(0.0, -4.905, 0.0) * t * t;
+        float tt = uTime + aPhase;
+        float t = tt - floor(tt / aLife) * aLife;
+        float m = jetMul(aJet, uTime - t);
+        vec3 v = vec3(aVel.x / m, aVel.y * m, aVel.z / m);
+        float flight = 2.0 * v.y / 9.81;
+        vec3 p = aOrigin + v * t + vec3(0.0, -4.905, 0.0) * t * t;
         p.y = max(p.y, 0.43);
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * mv;
         gl_PointSize = aSize * uScale / max(0.1, -mv.z);
-        vA = smoothstep(0.0, 0.08, t / aLife) * (1.0 - smoothstep(0.75, 1.0, t / aLife));
+        float k = t / flight;
+        vA = step(k, 1.0) * smoothstep(0.0, 0.08, k) * (1.0 - smoothstep(0.78, 1.0, k));
       }`,
     fragmentShader: /* glsl */`
-      uniform float uNight; varying float vA;
+      uniform float uNight; uniform vec3 uTint; varying float vA;
       void main() {
         vec2 c = gl_PointCoord - 0.5; float d = dot(c, c);
-        if (d > 0.25) discard;
+        if (d > 0.25 || vA <= 0.0) discard;
         float a = (1.0 - d * 4.0) * vA * 0.55;
-        vec3 col = mix(vec3(0.92, 0.96, 1.0), vec3(1.4, 1.7, 2.2), uNight);
+        vec3 col = mix(vec3(0.92, 0.96, 1.0), uTint * 2.2, uNight);
         gl_FragColor = vec4(col, a);
       }`,
     transparent: true, depthWrite: false,
@@ -2673,18 +2739,6 @@ function createOutdoorPeople(g) {
   crowd(g, -10, 0.03, 63, 3, 0.6, 'out'); crowd(g, 3, 0.03, 27.5, 4, 0.8, 'out'); crowd(g, -4.5, 0.03, 26, 2, 0.4, 'out');
   crowd(g, 14, 0.03, 30, 2, 0.4, 'out'); crowd(g, -30, 0.03, 30, 2, 0.45, 'out'); crowd(g, 52, 0.03, 26, 2, 0.5, 'out');
   for (const deg of [45, 180]) { const a = deg * Math.PI / 180; inst(g, PROTO.personSitOut, TRS(F.x + Math.cos(a) * 10.5, 0.03, F.z + Math.sin(a) * 10.5, Math.atan2(-Math.cos(a), -Math.sin(a)))); }
-  // гуляющие: круги вокруг фонтана и маршруты «улица — вход»
-  const N = 16;
-  const mesh = new THREE.InstancedMesh(PROTO.geoPersonWalk, MAT.people, N);
-  mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
-  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  g.add(mesh);
-  const r = mulberry(77);
-  for (let i = 0; i < N; i++) {
-    if (i < 6) ANIM.walkers.push({ type: 'circle', r: 12.5 + r() * 2, speed: (0.09 + r() * 0.04) * (i % 2 ? 1 : -1), phase: r() * 6.28, s: 0.93 + r() * 0.12 });
-    else ANIM.walkers.push({ type: 'line', a: [(r() - 0.5) * 10, 74], b: [(r() - 0.5) * 6, HZ + 2.5], speed: 0.03 + r() * 0.02, phase: r(), s: 0.93 + r() * 0.12, side: (i % 2 ? 1 : -1) * (12 + r() * 2.5) });
-  }
-  ANIM.walkerMesh = mesh;
 }
 
 /* =====================================================================
@@ -2751,9 +2805,9 @@ function createSkyAndLights() {
 
   // Дымка у горизонта: скрывает край земли и склеивает её с небом
   haze = new THREE.Mesh(new THREE.CylinderGeometry(1550, 1550, 170, 64, 1, true), new THREE.ShaderMaterial({
-    uniforms: { uColor: { value: FOG.day.clone() } },
+    uniforms: { uColor: { value: FOG.day.clone() }, uOpacity: { value: 1 } },
     vertexShader: 'varying float vY; void main(){ vY = uv.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: 'uniform vec3 uColor; varying float vY; void main(){ float a = pow(1.0 - vY, 2.6); gl_FragColor = vec4(uColor, a); }',
+    fragmentShader: 'uniform vec3 uColor; uniform float uOpacity; varying float vY; void main(){ float a = pow(1.0 - vY, 2.6); gl_FragColor = vec4(uColor, a * uOpacity); }',
     side: THREE.BackSide, transparent: true, depthWrite: false, fog: false,
   }));
   haze.position.y = 85; haze.renderOrder = -7; scene.add(haze);
@@ -2777,31 +2831,35 @@ function createSkyAndLights() {
   // Прожекторы сцены главного зала
   for (const s of HALL.spots || []) {
     const sl = new THREE.SpotLight('#fff0d8', 260, 32, 0.26, 0.55, 1.6);
-    sl.position.copy(s.from); sl.target.position.copy(s.to);
+    sl.position.copy(s.from); sl.target.position.copy(s.to); s.light = sl;
     scene.add(sl, sl.target);
   }
   const hallFill = new THREE.PointLight('#ffd9b0', 45, 24, 1.6); hallFill.position.set(HALL.cx, 8.5, -6); scene.add(hallFill);
 }
 
-// Цвет неба у горизонта: рендер Sky в маленькую float-текстуру → цвет тумана
+// Цвет неба у горизонта: рендер Sky в маленькую float-текстуру → цвет тумана (асинхронное чтение, без остановки GPU)
+const PROBE = {};
 async function sampleHorizonColor() {
   try {
-    const rt = new THREE.WebGLRenderTarget(8, 8, { type: THREE.FloatType });
-    const cam = new THREE.PerspectiveCamera(6, 1, 0.1, 20000);
-    const sc = new THREE.Scene(); const s2 = new Sky(); s2.material = sky.material; s2.scale.setScalar(10000); sc.add(s2);
-    const buf = new Float32Array(8 * 8 * 4), acc = new THREE.Color(0, 0, 0);
-    const dirs = [0, 90, 180, 270];
+    if (!PROBE.rt) {
+      PROBE.rt = new THREE.WebGLRenderTarget(8, 8, { type: THREE.FloatType });
+      PROBE.cam = new THREE.PerspectiveCamera(6, 1, 0.1, 20000);
+      PROBE.scene = new THREE.Scene(); const s2 = new Sky(); s2.material = sky.material; s2.scale.setScalar(10000); PROBE.scene.add(s2);
+      PROBE.buf = new Float32Array(8 * 8 * 4);
+    }
+    const samples = [], dirs = [0, 45, 90, 135, 180, 225, 270, 315];
     for (const a of dirs) {
       const rad = THREE.MathUtils.degToRad(a);
-      cam.position.set(0, 0, 0); cam.lookAt(Math.sin(rad), 0.035, Math.cos(rad));
-      renderer.setRenderTarget(rt); renderer.render(sc, cam);
-      await renderer.readRenderTargetPixelsAsync(rt, 0, 0, 8, 8, buf);
-      let r = 0, g = 0, b = 0; for (let i = 0; i < 64; i++) { r += buf[i * 4]; g += buf[i * 4 + 1]; b += buf[i * 4 + 2]; }
-      acc.r += r / 64; acc.g += g / 64; acc.b += b / 64;
+      PROBE.cam.position.set(0, 0, 0); PROBE.cam.lookAt(Math.sin(rad), 0.035, Math.cos(rad));
+      renderer.setRenderTarget(PROBE.rt); renderer.render(PROBE.scene, PROBE.cam); renderer.setRenderTarget(null);
+      await renderer.readRenderTargetPixelsAsync(PROBE.rt, 0, 0, 8, 8, PROBE.buf);
+      let r = 0, g = 0, b = 0; for (let i = 0; i < 64; i++) { r += PROBE.buf[i * 4]; g += PROBE.buf[i * 4 + 1]; b += PROBE.buf[i * 4 + 2]; }
+      samples.push(new THREE.Color(r / 64, g / 64, b / 64));
     }
-    renderer.setRenderTarget(null); rt.dispose();
-    acc.multiplyScalar(1 / dirs.length);
-    if (isFinite(acc.r) && acc.r > 0.01) FOG.day.copy(acc).multiplyScalar(0.97);
+    samples.sort((p, q) => (p.r + p.g + p.b) - (q.r + q.g + q.b));
+    const acc = new THREE.Color(0, 0, 0); for (const c of samples.slice(0, 5)) acc.add(c);
+    acc.multiplyScalar(1 / 5);
+    if (isFinite(acc.r) && isFinite(acc.g) && isFinite(acc.b)) FOG.day.copy(acc).multiplyScalar(0.97);
   } catch (e) { console.warn('Horizon sampling fallback', e); }
 }
 
@@ -2814,7 +2872,12 @@ function createEnvironment() {
   gnd.position.y = -3; dayScene.add(gnd);
   const band = new THREE.Mesh(new THREE.CylinderGeometry(600, 600, 40, 32, 1, true), new THREE.MeshBasicMaterial({ color: new THREE.Color('#3b4a33').multiplyScalar(0.5), side: THREE.BackSide }));
   band.position.y = 14; dayScene.add(band);
-  envDay = pmrem.fromScene(dayScene, 0.02, 0.1, 3000).texture;
+  ENV.pmrem = pmrem; ENV.dayScene = dayScene;
+  ENV.cubeRT = new THREE.WebGLCubeRenderTarget(128, { type: THREE.HalfFloatType });
+  ENV.cubeCam = new THREE.CubeCamera(0.1, 3000, ENV.cubeRT);
+  ENV.cubeCam.update(renderer, dayScene);
+  ENV.dayRT = pmrem.fromCubemap(ENV.cubeRT.texture);
+  envDay = ENV.dayRT.texture;
   const nightScene = new THREE.Scene();
   const nd = new THREE.Mesh(new THREE.SphereGeometry(900, 32, 16), new THREE.ShaderMaterial({
     uniforms: { uTop: { value: NIGHT_ZENITH }, uHor: { value: NIGHT_HORIZON } },
@@ -2824,8 +2887,14 @@ function createEnvironment() {
   }));
   nightScene.add(nd);
   envNight = pmrem.fromScene(nightScene, 0.04, 0.1, 3000).texture;
-  pmrem.dispose();
   scene.environment = envDay;
+}
+const ENV = {};
+// Перерисовка дневных отражений под текущее положение солнца (закат отражается в стекле)
+function refreshDayEnv() {
+  if (!ENV.cubeCam) return;
+  ENV.cubeCam.update(renderer, ENV.dayScene);
+  ENV.pmrem.fromCubemap(ENV.cubeRT.texture, ENV.dayRT);
 }
 
 /* =====================================================================
@@ -2838,7 +2907,7 @@ const QUALITY = {
 };
 const STATE = {
   quality: IS_PHONE ? 'medium' : CONFIG.quality, autoQuality: true,
-  day: 1, dayTarget: 1, section: false, sectionAuto: false, floor: 'all', labels: true,
+  day: 1, time: CONFIG.startTime, timeAnim: null, timelapse: false, assembly: null, tour: null, section: false, sectionAuto: false, floor: 'all', labels: true,
   mode: 'loading', idle: 0, hover: null, card: null, fly: null, intro: null,
 };
 
@@ -2882,45 +2951,14 @@ function setQuality(q, manual = false) {
 }
 
 /* =====================================================================
-   ДЕНЬ / НОЧЬ
-   ===================================================================== */
-const _c1 = new THREE.Color(), _v1 = new THREE.Vector3();
-function applyDayNight(f) { // f = 1 — день, 0 — ночь
-  const n = 1 - f, D = DN.day, Nn = DN.night, e = smooth(f);
-  sun.intensity = lerp(Nn.sunI, D.sunI, e);
-  sun.color.copy(Nn.sun).lerp(D.sun, e);
-  _v1.copy(moonDir).lerp(sunDirDay, e).normalize();
-  sun.position.copy(sunTarget).addScaledVector(_v1, 260);
-  hemi.intensity = lerp(Nn.hemiI, D.hemiI, e);
-  hemi.color.copy(Nn.hemiSky).lerp(D.hemiSky, e); hemi.groundColor.copy(Nn.hemiGround).lerp(D.hemiGround, e);
-  scene.fog.color.copy(FOG.night).lerp(FOG.day, e);
-  scene.fog.near = lerp(Nn.fogNear, D.fogNear, e); scene.fog.far = lerp(Nn.fogFar, D.fogFar, e);
-  haze.material.uniforms.uColor.value.copy(scene.fog.color);
-  const elev = lerp(-6, CONFIG.sun.elevation, e);
-  sphericalDir(elev, CONFIG.sun.azimuth, sky.material.uniforms.sunPosition.value);
-  nightDome.material.uniforms.uOpacity.value = smooth(clamp(n * 1.25, 0, 1));
-  stars.material.uniforms.uOpacity.value = smooth(clamp(n * 1.6 - 0.6, 0, 1));
-  moon.material.opacity = smooth(clamp(n * 1.5 - 0.5, 0, 1));
-  scene.environment = f > 0.5 ? envDay : envNight;
-  scene.environmentIntensity = lerp(Nn.envI, D.envI, e);
-  renderer.toneMappingExposure = lerp(Nn.exposure, D.exposure, e);
-  bloomPass.threshold = lerp(Nn.bloomT, D.bloomT, e); bloomPass.strength = lerp(Nn.bloomS, D.bloomS, e); bloomPass.radius = lerp(Nn.bloomR, D.bloomR, e);
-  for (const m of NIGHT_MATS) m.emissiveIntensity = lerp(m.userData.nightI, m.userData.dayI, e);
-  MAT.pool.opacity = n * 0.6; MAT.wash.opacity = n * 0.5;
-  for (const m of FADE_GLASS) m.emissiveIntensity = n * 0.22;
-  MAT.glass.emissiveIntensity = n * 0.22;
-  for (const l of INTERIOR_LIGHTS) l.intensity = lerp(Nn.interior, D.interior, e) * 42;
-  if (ANIM.spray) ANIM.spray.uniforms.uNight.value = n;
-  MAT.carLights.color.setScalar(lerp(1, 0.25, e));
-}
-
-/* =====================================================================
    РАЗРЕЗ: плавное снятие кровли и 2 этажа
    ===================================================================== */
 const FADE_GLASS = [];
 function cloneMat(m) {
   const c = m.clone();
-  if (m.userData.isGlass) { c.onBeforeCompile = m.onBeforeCompile; c.customProgramCacheKey = m.customProgramCacheKey; FADE_GLASS.push(c); }
+  // clone() не копирует шейдерные патчи — переносим их явно
+  c.onBeforeCompile = m.onBeforeCompile; c.customProgramCacheKey = m.customProgramCacheKey;
+  if (m.userData.isGlass) FADE_GLASS.push(c);
   if (NIGHT_MATS.includes(m)) NIGHT_MATS.push(c);
   return c;
 }
@@ -3056,7 +3094,7 @@ function updateZones(dt) {
     // уровни подписей: без разреза — главные зоны; в разрезе — зоны видимого этажа
     let tier = z.layer === 'site' || (z.major && !STATE.section);
     if (STATE.section) tier = tier || (STATE.floor === '1' ? z.layer === 'f1' : z.layer === 'f2' || z.id === 'hall' || z.id === 'lobby');
-    z.labelObj.visible = vis && STATE.labels && !inside && STATE.mode !== 'intro' && (tier || STATE.hover === z || STATE.card === z);
+    z.labelObj.visible = vis && STATE.labels && !inside && STATE.mode !== 'intro' && !STATE.tour && !STATE.assembly && (tier || STATE.hover === z || STATE.card === z);
   }
   declutterLabels();
 }
@@ -3149,6 +3187,7 @@ function startIntro() {
   STATE.intro = { t: 0, curve: new THREE.CatmullRomCurve3(pts, false, 'centripetal'), tcurve: new THREE.CatmullRomCurve3(tg) };
   STATE.mode = 'intro'; controls.enabled = false;
   document.body.classList.add('intro');
+  startAssembly(0.6);
 }
 function endIntro() {
   if (!STATE.intro) return;
@@ -3156,6 +3195,7 @@ function endIntro() {
   camera.position.copy(viewPos(ov)); controls.target.copy(V(ov.target)); camera.lookAt(controls.target);
   STATE.intro = null; STATE.mode = 'orbit'; controls.enabled = true; STATE.idle = 0;
   document.body.classList.remove('intro');
+  finishAssembly();
   document.querySelectorAll('.vbtn').forEach((b) => b.classList.toggle('on', b.dataset.view === 'overview'));
   let seen = false; try { seen = localStorage.getItem('dk3d-hint') === '1'; } catch (e) { /* хранилище недоступно */ }
   if (!seen) setTimeout(() => showHint(true), 400);
@@ -3207,6 +3247,7 @@ function enterWalk() {
   try { plc.lock(); } catch (e) { toast('Браузер не разрешил захват мыши'); }
 }
 function onWalkLock() {
+  stopTour(); finishAssembly(); showAnimMenu(false);
   STATE.mode = 'walk'; STATE.fly = null; controls.enabled = false; controls.autoRotate = false;
   document.body.classList.add('walking'); closeCard(); setHover(null);
   if (STATE.section) setSection(false, 'all');
@@ -3283,27 +3324,6 @@ function updateCars(t) {
   });
   for (const m of ANIM.carMeshes) m.instanceMatrix.needsUpdate = true;
 }
-function updateWalkers(t) {
-  const M = ANIM.walkerMesh; if (!M) return;
-  const F = SITE.fountain; ANIM.walkerPos = [];
-  ANIM.walkers.forEach((w, i) => {
-    let x, z, ry;
-    if (w.type === 'circle') {
-      const a = w.phase + w.speed * t;
-      x = F.x + Math.cos(a) * w.r; z = F.z + Math.sin(a) * w.r;
-      ry = Math.atan2(-Math.sin(a) * Math.sign(w.speed), Math.cos(a) * Math.sign(w.speed));
-    } else {
-      const u = (w.phase + w.speed * t) % 2, k = u < 1 ? u : 2 - u;
-      const sx = w.side;
-      x = sx; z = lerp(w.a[1], w.b[1], k);
-      ry = u < 1 ? Math.PI : 0;
-    }
-    const bob = Math.abs(Math.sin(t * 6 + i)) * 0.03;
-    M.setMatrixAt(i, TRS(x, 0.03 + bob, z, ry, w.s, w.s, w.s));
-    ANIM.walkerPos.push([x, z]);
-  });
-  M.instanceMatrix.needsUpdate = true;
-}
 function updateLED(dt) {
   const L = ANIM.led; if (!L) return;
   L.t += dt;
@@ -3315,6 +3335,373 @@ function updateLED(dt) {
     L.tex.needsUpdate = true;
     if (L.fade >= 1) { const tmp = L.a; L.a = L.b; L.b = tmp; L.fade = -1; L.t = 0; }
   }
+}
+
+/* =====================================================================
+   АНИМАЦИИ: время суток, пешеходы, птицы, ветер, фонтан, прожекторы,
+   сборка здания, экскурсия
+   ===================================================================== */
+const U = { time: { value: 0 }, wind: { value: 1 } };           // общие юниформы для шейдерных анимаций
+const TOD = { sunDir: new THREE.Vector3(), night: false, envAt: -99, envClock: 0, fogClock: 0, sampling: false };
+const WARM_SUN = new THREE.Color('#ffaa5e'), WARM_SKY = new THREE.Color('#ffc69a');
+const _v1 = new THREE.Vector3(), _v2 = new THREE.Vector3(), DOWN = new THREE.Vector3(0, -1, 0), FWD = new THREE.Vector3(0, 0, 1);
+const sstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+// Высота и азимут солнца по времени суток: восход 6:30, закат 18:30, в 13:00 — значения из CONFIG.sun
+const sunElevation = (t) => (CONFIG.sun.elevation / Math.sin(Math.PI * 6.5 / 12)) * Math.sin(Math.PI * (t - 6.5) / 12);
+const sunAzimuth = (t) => CONFIG.sun.azimuth + (t - 13) * 15;
+const formatTime = (t) => { const m = Math.floor(((t % 24) + 24) % 24 * 60); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+
+// Освещение сцены для заданного времени (часы 0–24): солнце, небо, туман, свет в окнах
+function applyTime(t) {
+  const elev = sunElevation(t), D = DN.day, Nn = DN.night;
+  sphericalDir(elev, sunAzimuth(t), TOD.sunDir);
+  const f = sstep(-8, 4, elev);              // доля дня
+  const gold = 1 - sstep(2, 26, elev);       // «золотой час» у горизонта
+  const L = 1 - sstep(-5, 6, elev);          // освещение здания включается в сумерках
+  STATE.day = f;
+  sky.material.uniforms.sunPosition.value.copy(TOD.sunDir);
+  const sI = D.sunI * sstep(-1, 9, elev), mI = Nn.sunI * sstep(-2, -12, elev);
+  if (sI >= mI) { _v1.copy(TOD.sunDir); sun.intensity = sI; sun.color.copy(D.sun).lerp(WARM_SUN, gold * 0.85); }
+  else { _v1.copy(moonDir); sun.intensity = mI; sun.color.copy(Nn.sun); }
+  sun.position.copy(sunTarget).addScaledVector(_v1, 260);
+  hemi.intensity = lerp(Nn.hemiI, D.hemiI, f) * (1 - gold * 0.3);
+  hemi.color.copy(Nn.hemiSky).lerp(D.hemiSky, f).lerp(WARM_SKY, gold * f * 0.35);
+  hemi.groundColor.copy(Nn.hemiGround).lerp(D.hemiGround, f);
+  scene.fog.color.copy(FOG.night).lerp(FOG.day, f);
+  scene.fog.near = lerp(Nn.fogNear, D.fogNear, f); scene.fog.far = lerp(Nn.fogFar, D.fogFar, f);
+  haze.material.uniforms.uColor.value.copy(scene.fog.color);
+  haze.material.uniforms.uOpacity.value = 1 - gold * 0.6;
+  const n = 1 - f;
+  nightDome.material.uniforms.uOpacity.value = sstep(0.1, 0.95, n);
+  stars.material.uniforms.uOpacity.value = sstep(0.45, 1, n);
+  moon.material.opacity = sstep(0.4, 1, n);
+  scene.environment = f > 0.3 ? envDay : envNight;
+  scene.environmentIntensity = lerp(Nn.envI, D.envI, f) * (1 - gold * 0.25);
+  renderer.toneMappingExposure = lerp(Nn.exposure, D.exposure, f) + gold * f * 0.06;
+  bloomPass.threshold = lerp(Nn.bloomT, D.bloomT, f); bloomPass.strength = lerp(Nn.bloomS, D.bloomS, f); bloomPass.radius = lerp(Nn.bloomR, D.bloomR, f);
+  for (const m of NIGHT_MATS) m.emissiveIntensity = lerp(m.userData.dayI, m.userData.nightI, L);
+  MAT.pool.opacity = L * 0.6; MAT.wash.opacity = L * 0.5;
+  for (const m of FADE_GLASS) m.emissiveIntensity = L * 0.22;
+  MAT.glass.emissiveIntensity = L * 0.22;
+  for (const l of INTERIOR_LIGHTS) l.intensity = lerp(D.interior, Nn.interior, L) * 42;
+  if (ANIM.spray) ANIM.spray.uniforms.uNight.value = L;
+  MAT.carLights.color.setScalar(lerp(0.25, 1, L));
+  if (ANIM.birds) ANIM.birds.visible = f > 0.4;
+  const night = f < 0.5;
+  if (night !== TOD.night) {
+    TOD.night = night;
+    $('btnDay').classList.toggle('on', night);
+    $('btnDay').querySelector('.i-sun').style.display = night ? 'none' : '';
+    $('btnDay').querySelector('.i-moon').style.display = night ? '' : 'none';
+  }
+  $('timeText').textContent = formatTime(t);
+}
+// Плавный переход к заданному времени (всегда вперёд по часам — через закат или рассвет)
+function setTimeTarget(target, duration = 4.5) {
+  const delta = (((target - STATE.time) % 24) + 24) % 24;
+  STATE.timelapse = false; updateAnimMenu();
+  STATE.timeAnim = delta < 0.01 ? null : { remain: delta, rate: delta / duration };
+}
+function updateTime(dt) {
+  let changing = false;
+  if (STATE.timelapse) { STATE.time = (STATE.time + dt * 24 / CONFIG.animation.dayLength) % 24; changing = true; }
+  else if (STATE.timeAnim) {
+    const step = Math.min(STATE.timeAnim.remain, STATE.timeAnim.rate * dt);
+    STATE.time = (STATE.time + step) % 24; STATE.timeAnim.remain -= step;
+    if (STATE.timeAnim.remain <= 1e-6) STATE.timeAnim = null;
+    changing = true;
+  }
+  if (!changing) return;
+  applyTime(STATE.time);
+  // небо меняется → периодически обновляем цвет тумана и отражения
+  TOD.fogClock += dt; TOD.envClock += dt;
+  if (TOD.fogClock > 0.4 && !TOD.sampling && STATE.day > 0.02) { TOD.fogClock = 0; TOD.sampling = true; sampleHorizonColor().finally(() => { TOD.sampling = false; }); }
+  if (TOD.envClock > 0.7 && STATE.day > 0.05 && Math.abs(STATE.time - TOD.envAt) > 0.25) { TOD.envClock = 0; TOD.envAt = STATE.time; refreshDayEnv(); }
+}
+
+/* ---------- Пешеходы: шаг ногами и руками считается в вершинном шейдере ---------- */
+const WALK_GLSL = (target) => `
+  {
+    float wph = uTime * 7.0 + aPhase, wsw = sin(wph);
+    vec3 wp = position; float wa = 0.0, wpy = 0.0; bool wr = false;
+    if (abs(wp.x) > 0.19 && wp.y > 0.7 && wp.y < 1.45) { wa = -wsw * 0.36 * (wp.x < 0.0 ? 1.0 : -1.0); wpy = 1.38; wr = true; }
+    else if (wp.y < 0.9) { wa = wsw * 0.42 * (wp.x < 0.0 ? 1.0 : -1.0); wpy = 0.9; wr = true; }
+    if (wr) {
+      float c = cos(wa), s = sin(wa);
+      ${target === 'pos'
+    ? 'float dy = wp.y - wpy; transformed.y = wpy + dy * c - wp.z * s; transformed.z = dy * s + wp.z * c;'
+    : 'objectNormal = vec3(objectNormal.x, objectNormal.y * c - objectNormal.z * s, objectNormal.y * s + objectNormal.z * c);'}
+    }
+    ${target === 'pos' ? 'transformed.y += abs(cos(wph)) * 0.03;' : ''}
+  }`;
+function walkerMaterial(depth = false) {
+  const m = depth ? new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking }) : MAT.people.clone();
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uTime = U.time;
+    sh.vertexShader = 'uniform float uTime;\nattribute float aPhase;\n' + sh.vertexShader
+      .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n' + WALK_GLSL('nrm'))
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + WALK_GLSL('pos'));
+  };
+  m.customProgramCacheKey = () => (depth ? 'walkerDepth' : 'walker');
+  return m;
+}
+// Маршрут: точки [x, y, z]; loop — замкнутый, иначе «туда-обратно»
+function makePath(pts, loop) {
+  const P = pts.map((p) => new THREE.Vector3(...p));
+  if (loop) P.push(P[0].clone());
+  const acc = [0]; for (let i = 1; i < P.length; i++) acc.push(acc[i - 1] + P[i].distanceTo(P[i - 1]));
+  return { P, acc, len: acc[acc.length - 1], loop };
+}
+const circlePath = (cx, cz, r, n = 28, dir = 1) => Array.from({ length: n }, (_, i) => { const a = dir * (i / n) * Math.PI * 2; return [cx + Math.cos(a) * r, 0.03, cz + Math.sin(a) * r]; });
+function walkerRoutes() {
+  const F = SITE.fountain, y = 0.03;
+  return {
+    site: [
+      { pts: circlePath(F.x, F.z, 12.6, 28, 1), loop: true, n: 3, speed: 1.15 },
+      { pts: circlePath(F.x, F.z, 14.2, 28, -1), loop: true, n: 3, speed: 1.25 },
+      { pts: [[-160, y, 75.4], [160, y, 75.4]], n: 4, speed: 1.35 },
+      { pts: [[160, y, 90.8], [-160, y, 90.8]], n: 3, speed: 1.3 },
+      // от перехода к входу и к стойке регистрации (двери открываются сами)
+      { pts: [[-3, y, 76], [-9.6, y, 62], [-9.6, y, 38], [-0.6, y, 27], [-0.4, Y0, 21], [-1.2, Y0, 17], [-3.8, Y0, 15.6]], n: 3, speed: 1.3 },
+      { pts: [[3, y, 76], [9.6, y, 62], [9.6, y, 38], [0.8, y, 27], [0.6, Y0, 21], [2.0, Y0, 17], [4.6, Y0, 15.8]], n: 3, speed: 1.25 },
+      // с парковки через площадь и лобби к кофе-бару
+      { pts: [[50, y, 12], [44, y, 24.5], [20, y, 26.6], [6, y, 26], [1.2, y, 24], [1.0, Y0, 21], [3.2, Y0, 15], [8.2, Y0, 10.4], [8.2, Y0, 3.4], [24, Y0, 3.6], [29.4, Y0, -1.5]], n: 3, speed: 1.3 },
+      // лобби → гардероб
+      { pts: [[-1.0, Y0, 17.5], [-6.5, Y0, 14.9], [-14, Y0, 14.8], [-22, Y0, 11.8]], n: 2, speed: 1.1 },
+      // подъём по парадной лестнице
+      { pts: [[10.6, Y0, 22.6], [10.6, Y0, 20.6], [10.6, F2, 10.7], [10.6, F2, 9.4], [2, F2, 7.2]], n: 2, speed: 0.9 },
+    ],
+    f2: [
+      { pts: [[9.8, F2, 7.2], [-10.3, F2, 7.2], [-10.3, F2, 5.4]], n: 2, speed: 1.1 },
+      { pts: [[-15.2, F2, 7.5], [-15.2, F2, 21], [-33, F2, 21], [-33.2, F2, 9.5]], loop: true, n: 3, speed: 0.9 },
+      { pts: [[2, F2, 3.8], [32.3, F2, 3.8], [32.3, F2, -11.5], [2, F2, -11.5]], loop: true, n: 3, speed: 1.0 },
+    ],
+  };
+}
+function createWalkers() {
+  ANIM.walkerSets = []; ANIM.walkerMeshes = [];
+  const r = mulberry(77), routes = walkerRoutes();
+  for (const key of ['site', 'f2']) {
+    const walkers = [];
+    for (const rt of routes[key]) {
+      const path = makePath(rt.pts, !!rt.loop);
+      for (let k = 0; k < rt.n; k++) walkers.push({ path, speed: rt.speed * (0.9 + r() * 0.2), offset: (k / rt.n) * path.len * (path.loop ? 1 : 2) + r() * 3, s: 0.93 + r() * 0.12 });
+    }
+    const geo = PROTO.personOut.geometry.clone();
+    const ph = new Float32Array(walkers.length); for (let i = 0; i < ph.length; i++) ph[i] = r() * 6.28;
+    geo.setAttribute('aPhase', new THREE.InstancedBufferAttribute(ph, 1));
+    const mesh = new THREE.InstancedMesh(geo, walkerMaterial(), walkers.length);
+    mesh.castShadow = key === 'site'; mesh.receiveShadow = true; mesh.frustumCulled = false;
+    mesh.customDepthMaterial = walkerMaterial(true);
+    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    groups[key].add(mesh);
+    ANIM.walkerSets.push({ mesh, walkers }); ANIM.walkerMeshes.push(mesh);
+  }
+}
+function updateWalkers(t) {
+  if (!ANIM.walkerSets) return;
+  ANIM.walkerPos = [];
+  for (const { mesh, walkers } of ANIM.walkerSets) {
+    walkers.forEach((w, i) => {
+      const { P, acc, len, loop } = w.path;
+      let d = (w.offset + w.speed * t) % (loop ? len : 2 * len), back = false;
+      if (!loop && d > len) { d = 2 * len - d; back = true; }
+      let k = 1; while (k < acc.length - 1 && acc[k] < d) k++;
+      const a = P[k - 1], b = P[k], u = (d - acc[k - 1]) / Math.max(1e-6, acc[k] - acc[k - 1]);
+      _v1.lerpVectors(a, b, u);
+      const ry = Math.atan2((b.x - a.x) * (back ? -1 : 1), (b.z - a.z) * (back ? -1 : 1));
+      mesh.setMatrixAt(i, TRS(_v1.x, _v1.y, _v1.z, ry, w.s, w.s, w.s));
+      ANIM.walkerPos.push([_v1.x, _v1.z]);
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+  }
+}
+
+/* ---------- Деревья качаются на ветру ---------- */
+const SWAY_GLSL = `
+  #include <begin_vertex>
+  {
+    #ifdef USE_INSTANCING
+      vec2 ip = instanceMatrix[3].xz;
+    #else
+      vec2 ip = vec2(0.0);
+    #endif
+    float h = max(0.0, transformed.y - 2.2);
+    float ph = uTime * 1.5 + ip.x * 0.37 + ip.y * 0.23;
+    transformed.x += (sin(ph) * 0.045 + sin(ph * 2.7 + transformed.y * 1.3) * 0.012) * h * uWind;
+    transformed.z += (cos(ph * 0.8 + 0.6) * 0.03 + cos(ph * 3.1 + transformed.x) * 0.01) * h * uWind;
+  }`;
+function swayPatch(m, key) {
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uTime = U.time; sh.uniforms.uWind = U.wind;
+    sh.vertexShader = 'uniform float uTime;\nuniform float uWind;\n' + sh.vertexShader.replace('#include <begin_vertex>', SWAY_GLSL);
+  };
+  m.customProgramCacheKey = () => key;
+}
+function setupWind() {
+  swayPatch(MAT.foliage, 'sway');
+  const depth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  swayPatch(depth, 'swayDepth');
+  scene.traverse((o) => { if (o.isInstancedMesh && o.material === MAT.foliage) o.customDepthMaterial = depth; });
+}
+
+/* ---------- Птицы: стая над участком, взмахи крыльев в шейдере ---------- */
+function createBirds() {
+  const v = new Float32Array([
+    0, 0, 0.35, -0.07, 0, -0.25, 0.07, 0, -0.25,
+    0, 0, 0.14, -0.6, 0.03, -0.1, 0, 0, -0.14,
+    0, 0, 0.14, 0, 0, -0.14, 0.6, 0.03, -0.1,
+  ]);
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(v, 3));
+  const N = 16, ph = new Float32Array(N); const r = mulberry(5);
+  for (let i = 0; i < N; i++) ph[i] = r() * 6.28;
+  geo.setAttribute('aPhase', new THREE.InstancedBufferAttribute(ph, 1));
+  const mat = new THREE.MeshBasicMaterial({ color: '#2b2d31', side: THREE.DoubleSide });
+  mat.onBeforeCompile = (sh) => {
+    sh.uniforms.uTime = U.time;
+    sh.vertexShader = 'uniform float uTime;\nattribute float aPhase;\n' + sh.vertexShader.replace('#include <begin_vertex>',
+      '#include <begin_vertex>\n float flap = sin(uTime * 12.0 + aPhase) * (0.55 + 0.45 * sin(uTime * 0.6 + aPhase));\n transformed.y += abs(position.x) * flap * 0.9;');
+  };
+  mat.customProgramCacheKey = () => 'bird';
+  const mesh = new THREE.InstancedMesh(geo, mat, N);
+  mesh.frustumCulled = false; mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  groups.site.add(mesh);
+  ANIM.birds = mesh;
+  ANIM.birdData = Array.from({ length: N }, () => ({ rad: 2 + r() * 7, w: 0.25 + r() * 0.3, p: r() * 6.28, h: r() * 3, s: 1.3 + r() * 0.5 }));
+}
+const birdPos = (t, b, out) => out.set(
+  15 + 75 * Math.sin(t * 0.042) + b.rad * Math.cos(t * b.w + b.p),
+  36 + 5 * Math.sin(t * 0.11) + b.h + 1.2 * Math.sin(t * 0.9 + b.p),
+  5 + 50 * Math.sin(t * 0.063 + 1) + b.rad * Math.sin(t * b.w + b.p));
+function updateBirds(t) {
+  if (!ANIM.birds || !ANIM.birds.visible) return;
+  ANIM.birdData.forEach((b, i) => {
+    birdPos(t, b, _v1); birdPos(t + 0.15, b, _v2);
+    const dx = _v2.x - _v1.x, dz = _v2.z - _v1.z, dy = _v2.y - _v1.y;
+    ANIM.birds.setMatrixAt(i, TRS(_v1.x, _v1.y, _v1.z, Math.atan2(dx, dz), b.s, b.s, b.s, -Math.atan2(dy, Math.hypot(dx, dz)), Math.sin(t * 0.5 + b.p) * 0.25));
+  });
+  ANIM.birds.instanceMatrix.needsUpdate = true;
+}
+
+/* ---------- Прожекторы зала плавно «ведут» сцену ---------- */
+function updateSpots(t) {
+  for (const [i, s] of (HALL.spots || []).entries()) {
+    s.to.copy(s.base).add(_v1.set(Math.sin(t * 0.45 + i * 2.1) * 1.7, 0, Math.cos(t * 0.37 + i * 1.3) * 1.2));
+    _v2.copy(s.to).sub(s.from); const len = _v2.length(); _v2.normalize();
+    s.cone.quaternion.setFromUnitVectors(DOWN, _v2); s.cone.scale.set(1, len / s.len, 1);
+    s.body.quaternion.copy(s.cone.quaternion);
+    s.lens.position.copy(s.from).addScaledVector(_v2, 0.26); s.lens.quaternion.setFromUnitVectors(FWD, _v2);
+    if (s.light) s.light.target.position.copy(s.to);
+  }
+}
+// Подсветка фонтана ночью переливается
+function updateFountainShow(t) {
+  if (!ANIM.spray) return;
+  ANIM.spray.uniforms.uTime.value = t;
+  const hue = (t * 0.04) % 1;
+  MAT.fountainGlow.emissive.setHSL(hue, 0.75, 0.6);
+  ANIM.spray.uniforms.uTint.value.setHSL(hue, 0.6, 0.65);
+}
+
+/* ---------- Сборка здания: 1 этаж поднимается, 2 этаж и кровля опускаются на место ---------- */
+function startAssembly(delay = 0) {
+  if (STATE.mode === 'walk') return;
+  closeCard(); setSection(false, 'all');
+  STATE.assembly = { t: -delay };
+  updateAssembly(0);
+}
+function updateAssembly(dt) {
+  const A = STATE.assembly; if (!A) return;
+  A.t += dt;
+  const t = Math.max(0, A.t);
+  groups.f1.position.y = -(RT + 0.6) * (1 - easeOutCubic(clamp(t / 1.7, 0, 1)));
+  const v2 = clamp((t - 1.4) / 1.0, 0, 1), v3 = clamp((t - 2.2) / 1.0, 0, 1);
+  groups.f2.userData.fade.v = v2; groups.f2.userData.fade.target = 1; setGroupFade(groups.f2, v2);
+  groups.roof.userData.fade.v = v3; groups.roof.userData.fade.target = 1; setGroupFade(groups.roof, v3);
+  for (const m of ANIM.walkerMeshes || []) m.visible = t > 3.2;
+  if (t >= 3.25) finishAssembly();
+}
+function finishAssembly() {
+  if (!STATE.assembly) return;
+  STATE.assembly = null; groups.f1.position.y = 0;
+  for (const k of ['f2', 'roof']) { const F = groups[k].userData.fade; F.v = 1; F.target = 1; setGroupFade(groups[k], 1); }
+  for (const m of ANIM.walkerMeshes || []) m.visible = true;
+}
+
+/* ---------- Экскурсия: автоматический облёт с пояснениями ---------- */
+const TOUR = [
+  { view: 'overview', title: CONFIG.name, text: 'Конгресс-центр 70 × 45 м: два этажа, амфитеатр на {seats} мест, переговорные и эксплуатируемая кровля.' },
+  { view: 'entrance', title: 'Главный вход', text: 'Консольный навес вылетом 8,5 м без единой опоры и витраж на высоту двух этажей.' },
+  { view: 'lobby', title: 'Двусветное лобби', text: 'Зенитный фонарь, стойка регистрации, инфоэкраны и парадная лестница на галерею.' },
+  { view: 'hall', title: 'Главный зал', text: 'Веерная рассадка на {seats} мест, сцена с авансценой, LED-экран 13 м и театральный свет.' },
+  { view: 'stage', title: 'Взгляд со сцены', text: 'Подъём каждого ряда — 45 см: спикера хорошо видно с любого места.' },
+  { view: 'rooms', title: 'Переговорные', text: 'Четыре переговорные со стеклянными фронтами вдоль фойе с кофе-баром.' },
+  { pos: [34, 36, 44], target: [2, 6, 2], section: '2', title: 'Второй этаж', text: 'Галерея над лобби, пресс-центр и бизнес-лаундж с видом на парк.' },
+  { pos: [40, 27, 36], target: [10, 11, 0], section: false, title: 'Кровля-терраса', text: 'Деревянный настил, пергола, озеленение и солнечные панели.' },
+  { pos: [44, 20, 86], target: [-2, 7, 10], section: false, night: true, title: 'Вечером', text: 'Подсветка фасада, светящаяся надпись, тёплый свет в окнах и огни площади.' },
+];
+function startTour() {
+  if (STATE.mode === 'walk' || STATE.mode === 'loading') return;
+  closeCard(); showAnimMenu(false); finishAssembly();
+  STATE.tour = { i: -1, t: 0, phase: 'fly' };
+  document.body.classList.add('touring'); $('tour').classList.add('show');
+  nextTourStep();
+}
+function nextTourStep() {
+  const T = STATE.tour; if (!T) return;
+  T.i++;
+  if (T.i >= TOUR.length) { stopTour(true); return; }
+  const s = TOUR[T.i];
+  if (s.night && STATE.day >= 0.5) setTimeTarget(21.6, 4);
+  else if (!s.night && STATE.day < 0.5) setTimeTarget(13, 3);
+  controls.autoRotate = false;
+  if (s.view) goView(s.view);
+  else {
+    if (s.section) setSection(true, s.section, true); else if (STATE.section) setSection(false, 'all');
+    flyTo(viewPos(s), V(s.target), { duration: 2.6 });
+  }
+  T.phase = 'fly'; T.t = 0;
+  $('tourStep').textContent = `${T.i + 1} / ${TOUR.length}`;
+  $('tourTitle').textContent = s.title;
+  $('tourText').textContent = s.text.replace(/\{seats\}/g, HALL.seatCount || CONFIG.hall.seats);
+  $('tourBar').style.width = '0%';
+}
+function updateTour(dt) {
+  const T = STATE.tour; if (!T) return;
+  STATE.idle = 0;
+  if (T.phase === 'fly') {
+    if (STATE.mode === 'orbit' && !STATE.timeAnim) { T.phase = 'dwell'; T.t = 0; controls.autoRotate = true; controls.autoRotateSpeed = 0.55; }
+  } else {
+    T.t += dt;
+    $('tourBar').style.width = Math.min(100, (T.t / CONFIG.animation.tourDwell) * 100) + '%';
+    if (T.t >= CONFIG.animation.tourDwell) nextTourStep();
+  }
+}
+function stopTour(finished = false) {
+  if (!STATE.tour) return;
+  STATE.tour = null; controls.autoRotate = false;
+  document.body.classList.remove('touring'); $('tour').classList.remove('show');
+  if (finished) { if (STATE.day < 0.5) setTimeTarget(13, 3.5); goView('overview'); toast('Экскурсия завершена'); }
+}
+
+/* ---------- Меню анимаций ---------- */
+function showAnimMenu(on) { $('animMenu').classList.toggle('show', on); $('btnAnim').classList.toggle('on', on); }
+function toggleTimelapse() {
+  if (STATE.timelapse) { STATE.timelapse = false; toast('Таймлапс остановлен · ' + formatTime(STATE.time)); }
+  else { STATE.timeAnim = null; STATE.timelapse = true; toast('Сутки за ' + CONFIG.animation.dayLength + ' секунд'); }
+  updateAnimMenu();
+}
+function updateAnimMenu() {
+  const b = document.querySelector('[data-anim="timelapse"]'); if (!b) return;
+  b.classList.toggle('active', STATE.timelapse);
+  b.querySelector('b').textContent = STATE.timelapse ? 'Остановить таймлапс' : 'Сутки за ' + CONFIG.animation.dayLength + ' секунд';
+}
+function runAnim(kind) {
+  showAnimMenu(false);
+  if (kind === 'tour') startTour();
+  else if (kind === 'timelapse') toggleTimelapse();
+  else if (kind === 'assembly') { stopTour(); goView('overview'); startAssembly(1.2); toast('Сборка здания'); }
 }
 
 /* =====================================================================
@@ -3345,7 +3732,7 @@ function buildUI() {
   CONFIG.views.forEach((v, i) => {
     const b = document.createElement('button'); b.className = 'vbtn'; b.dataset.view = v.id; b.title = `${v.label} (${i + 1})`;
     b.innerHTML = `<svg viewBox="0 0 24 24">${VIEW_ICONS[v.id] || ''}</svg>${v.label}`;
-    b.addEventListener('click', () => { closeCard(); goView(v.id); });
+    b.addEventListener('click', () => { closeCard(); stopTour(); goView(v.id); });
     nav.appendChild(b);
   });
   $('btnDay').addEventListener('click', toggleDay);
@@ -3362,15 +3749,21 @@ function buildUI() {
   $('cardClose').addEventListener('click', closeCard);
   $('cardGo').addEventListener('click', () => { if (STATE.card) flyToZone(STATE.card); });
   $('skip').addEventListener('click', (e) => { e.stopPropagation(); endIntro(); });
+  // меню анимаций и панель экскурсии
+  $('btnAnim').addEventListener('click', (e) => { e.stopPropagation(); showAnimMenu(!$('animMenu').classList.contains('show')); });
+  document.querySelectorAll('#animMenu [data-anim]').forEach((b) => b.addEventListener('click', () => runAnim(b.dataset.anim)));
+  document.addEventListener('pointerdown', (e) => { if (!e.target.closest('#animMenu, #btnAnim')) showAnimMenu(false); });
+  $('tourStop').addEventListener('click', () => { stopTour(); toast('Экскурсия остановлена'); });
+  $('tourNext').addEventListener('click', () => { if (STATE.tour) nextTourStep(); });
+  updateAnimMenu();
   if (isTouch) document.body.classList.add('touch');
 }
+// День / ночь: плавный переход через закат (к 22:30) или через рассвет (к 13:00)
 function toggleDay() {
-  STATE.dayTarget = STATE.dayTarget > 0.5 ? 0 : 1;
-  const night = STATE.dayTarget < 0.5;
-  $('btnDay').classList.toggle('on', night);
-  $('btnDay').querySelector('.i-sun').style.display = night ? 'none' : '';
-  $('btnDay').querySelector('.i-moon').style.display = night ? '' : 'none';
-  toast(night ? 'Ночной режим' : 'Дневной режим');
+  const toNight = STATE.timeAnim ? STATE.timeAnim.toNight === false : STATE.day >= 0.5;
+  setTimeTarget(toNight ? 22.5 : 13, 4.5);
+  if (STATE.timeAnim) STATE.timeAnim.toNight = toNight;
+  toast(toNight ? 'Закат → ночь' : 'Рассвет → день');
 }
 function toggleLabels() {
   STATE.labels = !STATE.labels;
@@ -3402,6 +3795,7 @@ function bindInput() {
   let down = null, pendingMove = null;
   el.addEventListener('pointerdown', (e) => {
     down = { x: e.clientX, y: e.clientY, t: performance.now() }; STATE.idle = 0; controls.autoRotate = false;
+    if (STATE.tour) { stopTour(); toast('Экскурсия остановлена'); }
     if (STATE.mode === 'intro') endIntro();
     if (STATE.mode === 'fly' && !STATE.fly.cut) { STATE.fly = null; STATE.mode = 'orbit'; controls.enabled = true; }
   });
@@ -3416,7 +3810,7 @@ function bindInput() {
     }
   });
   el.addEventListener('pointerleave', () => { pendingMove = null; setHover(null); });
-  el.addEventListener('wheel', () => { STATE.idle = 0; controls.autoRotate = false; }, { passive: true });
+  el.addEventListener('wheel', () => { STATE.idle = 0; controls.autoRotate = false; if (STATE.tour) stopTour(); }, { passive: true });
   // наведение проверяется не чаще одного раза за кадр
   bindInput.hoverTick = () => {
     if (!pendingMove || STATE.mode !== 'orbit' || isTouch) return;
@@ -3428,7 +3822,11 @@ function bindInput() {
     if (STATE.mode === 'intro') { endIntro(); return; }
     if (STATE.mode === 'walk') return;
     if (e.target.tagName === 'INPUT') return;
+    if (STATE.tour && e.code !== 'KeyT') { stopTour(); toast('Экскурсия остановлена'); }
     switch (e.code) {
+      case 'KeyT': if (STATE.tour) stopTour(); else startTour(); break;
+      case 'KeyK': toggleTimelapse(); break;
+      case 'KeyB': runAnim('assembly'); break;
       case 'KeyN': toggleDay(); break;
       case 'KeyC': setSection(!STATE.section, STATE.floor); break;
       case 'KeyL': toggleLabels(); break;
@@ -3437,7 +3835,7 @@ function bindInput() {
       case 'KeyH': showHint(!$('hint').classList.contains('show')); break;
       case 'Escape': closeCard(); showHint(false); break;
       default:
-        if (/^Digit[1-9]$/.test(e.code)) { const v = CONFIG.views[+e.code.slice(5) - 1]; if (v) { closeCard(); goView(v.id); } }
+        if (/^Digit[1-9]$/.test(e.code)) { const v = CONFIG.views[+e.code.slice(5) - 1]; if (v) { closeCard(); stopTour(); goView(v.id); } }
     }
   });
   addEventListener('keyup', (e) => { KEYS[e.code] = false; });
@@ -3464,31 +3862,31 @@ function renderFrame(dt) {
 }
 function tick() {
   const dt = Math.min(clock.getDelta(), 0.1);
-  elapsed += dt;
+  elapsed += dt; U.time.value = elapsed;
   // режим камеры
   if (STATE.mode === 'intro') updateIntro(dt);
   else if (STATE.mode === 'fly') updateFly(dt);
   else if (STATE.mode === 'walk') updateWalk(dt);
   else {
     STATE.idle += dt;
-    if (STATE.idle > CONFIG.idleAutoRotate && !STATE.card && !$('hint').classList.contains('show')) { controls.autoRotate = true; controls.autoRotateSpeed = 0.35; }
+    if (STATE.idle > CONFIG.idleAutoRotate && !STATE.card && !STATE.tour && !$('hint').classList.contains('show')) { controls.autoRotate = true; controls.autoRotateSpeed = 0.35; }
     controls.update(dt);
     clampOrbit();
   }
   bindInput.hoverTick && bindInput.hoverTick();
-  // день / ночь
-  if (STATE.day !== STATE.dayTarget) {
-    STATE.day = STATE.day < STATE.dayTarget ? Math.min(STATE.dayTarget, STATE.day + dt / 2.4) : Math.max(STATE.dayTarget, STATE.day - dt / 2.4);
-    applyDayNight(STATE.day);
-  }
-  updateFades(dt);
+  // время суток, сборка/разрез, экскурсия и «жизнь» сцены
+  updateTime(dt);
+  if (STATE.assembly) updateAssembly(dt); else updateFades(dt);
+  updateTour(dt);
   updateZones(dt);
   updateDoors(dt);
   updateFlags(elapsed);
   updateCars(elapsed);
   updateWalkers(elapsed);
+  updateBirds(elapsed);
+  updateSpots(elapsed);
+  updateFountainShow(elapsed);
   updateLED(dt);
-  if (ANIM.spray) ANIM.spray.uniforms.uTime.value = elapsed;
   if (ANIM.water) { MAT.water.normalMap.offset.set(elapsed * 0.02, elapsed * 0.013); }
   stars.material.uniforms.uTime.value = elapsed;
   updateNear();
@@ -3567,6 +3965,7 @@ async function init() {
   createInteriors();
   setProgress(68, 'Оптимизация геометрии'); await nextFrame();
   flushBatches(); flushInstances();
+  createWalkers(); createBirds(); setupWind();
   prepareFade(groups.roof, 16); prepareFade(groups.f2, 9);
   defineZones();
   setProgress(76, 'Небо, солнце и отражения'); await nextFrame();
@@ -3585,7 +3984,7 @@ async function init() {
   plc = new PointerLockControls(camera, document.body);
   plc.addEventListener('lock', onWalkLock); plc.addEventListener('unlock', onWalkUnlock);
   setQuality(STATE.quality);
-  applyDayNight(1);
+  applyTime(STATE.time);
   bindInput();
 
   setProgress(90, 'Компиляция шейдеров'); await nextFrame();
@@ -3608,7 +4007,8 @@ async function init() {
   startIntro();
   renderer.setAnimationLoop(tick);
   // хук для автоматизированной проверки и отладки из консоли
-  window.DK3D = { CONFIG, STATE, goView, setSection, setQuality, toggleDay, endIntro, camera, renderer, scene, controls, groups, plc, KEYS, WALKER };
+  window.DK3D = { CONFIG, STATE, goView, setSection, setQuality, toggleDay, endIntro, camera, renderer, scene, controls, groups, plc, KEYS, WALKER, startTour, stopTour, toggleTimelapse, setTimeTarget, startAssembly, runAnim,
+    pauseLoop: () => renderer.setAnimationLoop(null), resumeLoop: () => { clock.getDelta(); renderer.setAnimationLoop(tick); } };
 }
 
 addEventListener('error', (e) => { if (STATE.mode === 'loading') showError('Ошибка: ' + (e.message || e)); });
